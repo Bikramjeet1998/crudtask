@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <title>c2task</title>
+</head>
+
+<body>
+    <script src="https://code.jquery.com/jquery-3.6.3.min.js"
+        integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous">
+        </script>
+    <div class="div1">
+        <form action="#">
+            Enter name: <input type="text" id="name" value="">
+            Enter age : <input type="text" id="age" value=""> <br> <br>
+            <label>Gender</label>
+            <select id="gender" name="gender">
+                <option>Male</option>
+                <option>FeMale</option>
+            </select>
+            Enter Hobbies: <input type="text" id="Hobbies" class="multiple">
+            <input type="button" id="btnadd" value="Add" style="width: 5vw" onclick="add_item()"><br>
+            <div id="add" style="margin-left: 225px;"></div><br>
+            <button id="submit">Submit</button>
+        </form>
+    </div>
+    <div style="height: 500px;width: 400px;top: 50%; left: 50%; transform: translate(-30%,-30%);position: absolute;">
+
+        <table class='table' border 1>
+            <thead>
+                <tr>
+                    <th> NAME </th>
+                    <th> AGE </th>
+                    <th> GENDER </th>
+                    <th> HOBBIES </th>
+                    <th> Action</th>
+                </tr>
+            </thead>
+            <tbody class="tbody">
+
+
+            </tbody>
+
+
+        </table>
+    </div>
+    <script>
+        var selectedRow = null
+        var mul = [];
+        // add or delete multiple hobbies
+        function add_item(value = null) {
+            var fieldHTML = '<div id = "123"><input class="multiple" value="' + (value != null ? value : '') + '" type="text" id="Hobbies" /> <button id="remove" >Remove </button><br></div>'
+            $("#add").append(fieldHTML);
+        }
+        $(document).on('click', 'button#remove', function () {
+            $(this).closest('div').remove();
+        });
+
+
+
+
+        // run evenet on form submit
+        $("form").submit(function () {
+
+            event.preventDefault();
+            var formData = ReadData();
+            if (selectedRow == null) {
+                insertdata(formData);// pass the data object to insert function
+
+            }
+            else {
+                update(formData);
+            }
+            resetForm();
+            $("#add").empty();
+        })
+
+
+        function ReadData() {
+
+            $(".multiple").each(function () {
+                mul.push($(this).val());
+            });
+
+
+
+            var formData = {};
+            formData["name"] = $("#name").val();
+            formData["age"] = $("#age").val();
+            formData["gender"] = $("#gender").val();
+            // formData["Hobbies"] = $("#Hobbies").val();
+            formData["Hobbies"] = mul;
+            return formData;
+        }
+        function insertdata(obj) { // access object of formdata in read function
+            let table = document.getElementsByTagName("tbody")[0];
+            var newRow = table.insertRow(table.length);
+            cell1 = newRow.insertCell(0);
+            cell1.innerHTML = obj.name;
+            cell2 = newRow.insertCell(1);
+            cell2.innerHTML = obj.age;
+            cell3 = newRow.insertCell(2);
+            cell3.innerHTML = obj.gender;
+            cell4 = newRow.insertCell(3);
+            cell4.innerHTML = obj.Hobbies;
+            cell4 = newRow.insertCell(4);
+            cell4.innerHTML = `<button onClick="onEdit(this)">Edit</button> <button class="del">Delete</button>`;
+
+        }
+
+        function onEdit(t1) { //t1 refer to this keyword
+            selectedRow = t1.parentElement.parentElement;
+
+            document.getElementById("name").value = selectedRow.cells[0].innerHTML;
+            document.getElementById("age").value = selectedRow.cells[1].innerHTML;
+            document.getElementById("gender").value = selectedRow.cells[2].innerHTML;
+            // document.getElementById("Hobbies").value = selectedRow.cells[3].innerHTML;
+            let str = selectedRow.cells[3].innerHTML;
+            res = str.split(",");
+            // console.log(res);
+            // console.log(res[0], res[1], res[2]);
+            // var fieldHTML = '<div id = "123"><input class="multiple"  type="text" id="Hobbies" /> <button id="remove" >Remove </button><br></div>'
+            document.getElementById("Hobbies").value = res[0];
+            for (let i = 1; i <= res.length - 1; i++) {
+                add_item(res[i])  // $("#add").append(fieldHTML).innerHTML = res[i];
+
+            }
+            // document.getElementsByClassName("multiple").value = selectedRow.cells[3].innerHTML;  //acess a;; input with same class
+            $("#submit").text("update");
+
+
+        }
+        function update(formData) {
+            selectedRow.cells[0].innerHTML = formData.name;
+            selectedRow.cells[1].innerHTML = formData.age;
+            selectedRow.cells[2].innerHTML = formData.gender;
+            selectedRow.cells[3].innerHTML = formData.Hobbies;
+            $("#submit").text("submit");
+        }
+
+        $(document).on('click', 'button.del', function () {
+            $(this).closest('tr').remove();
+            return false;
+            resetForm();
+        });
+
+        function resetForm() {
+            $("#name").val("");
+            $("#age").val("");
+            $("#gender").val("");
+            // $("#Hobbies").val("");
+            $(".multiple").val(""); // clear multiple add field
+            selectedRow = null;
+            mul = []
+        }
+
+        // function addmore() {
+        //     var fieldHTML = '<div id = "123"><input class="multiple"  type="text" id="Hobbies" /> <button id="remove" >Remove </button><br></div>'
+
+        //     for (let i = 0; i <= mul.length -1; i++) {
+        //         $("#add").append(fieldHTML);
+        //         mul[i].split(",");
+        //     }
+        // }
+        // mul[i].split(",")
+
+
+
+
+    </script>
+
+
+</body>
+
+</html>
